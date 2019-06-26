@@ -64,6 +64,7 @@ class PricingService {
 }
 
 // READ-ONLY CLASS
+// Don't change any code in this class
 class InMemoryPricingRulesDatabase {
   constructor(initRows) {
     this.rows = initRows;
