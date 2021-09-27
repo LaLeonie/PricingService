@@ -21,8 +21,6 @@
 //
 // To test the sample, with the latest version of node installed (https://nodejs.org), run "node ./refactor.js".
 //
-// =========== SUBMISSION ========
-//
 // CHANGE CODE BELOW THIS LINE
 class PricingService {
   constructor(pricingRulesDatabase) {
