@@ -5,7 +5,7 @@
 // The intended functionality of the service is to calculate the prices for a given list of meeting rooms and meeting
 // lengths, based upon per [min|hour|day|week] tariffs. For example:
 //
-//   - If the length of the proposed meeting is greater than an hour and less than a week, the hourly tariff is used.
+//   - If the length of the proposed meeting is greater than an hour and less than a day, the hourly tariff is used.
 //
 //   - If the length of the proposed meeting is precisely a day, the daily tariff is used. The same applies for each tariff.
 //
@@ -22,8 +22,6 @@
 // To test the sample, with the latest version of node installed (https://nodejs.org), run "node ./refactor.js".
 //
 // =========== SUBMISSION ========
-//
-// Once you are happy with your refactor, please send a link to your gist back to tim@kittoffices.com.
 //
 // CHANGE CODE BELOW THIS LINE
 class PricingService {
@@ -64,7 +62,7 @@ class PricingService {
 }
 
 // READ-ONLY CLASS
-// Don't change any code in this class
+// Don't change any code in this class, but do pay attention to the available methods!
 class InMemoryPricingRulesDatabase {
   constructor(initRows) {
     this.rows = initRows;
