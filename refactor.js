@@ -25,8 +25,8 @@
 
 const MINUTE = 1;
 const HOUR = 60;
-const DAY = 24 * 60;
-const WEEK = 60 * 24 * 7;
+const DAY = HOUR * 24;
+const WEEK = DAY * 7;
 
 const calculatePrice = (length, rates) => {
   let price = 0;
@@ -56,22 +56,22 @@ const calculatePrice = (length, rates) => {
 class PricingService {
   constructor(pricingRulesDatabase) {
     this.pricingRulesDatabase = pricingRulesDatabase;
-    this.prices = [];
+    // this.prices = [];
   }
 
   //takes array of objects [{id, lengthInMins}, ...]
   //returns array of integers
   getPrices(pricingRequest) {
     const database = this.pricingRulesDatabase;
-
+    const prices = [];
     for (let i = 0; i < pricingRequest.length; i++) {
       let tarrifs = database.getPricingForId(pricingRequest[i].id); //array of tarrifs
       let length = pricingRequest[i].lengthInMins;
       let price = calculatePrice(length, tarrifs);
-      this.prices[i] = price;
+      prices[i] = price;
     }
 
-    return this.prices;
+    return prices;
   }
 }
 
@@ -102,6 +102,11 @@ var database = new InMemoryPricingRulesDatabase(seedData);
 service = new PricingService(database);
 
 // ===== TEST CASES =====
+
+// console.log(service.getPrices([{ id: 3, lengthInMins: 60 * 24 }]));
+
+// console.log(service.getPrices([{ id: 3, lengthInMins: 60 * 24 * 14 }]));
+
 // One day
 console.log(
   service.getPrices([{ id: 3, lengthInMins: 60 * 24 }])[0] === 60
@@ -137,3 +142,10 @@ console.log(
 console.log(
   service.getPrices([{ id: 6, lengthInMins: 60 }])[0] === 0 ? "pass" : "fail"
 );
+
+//0 minutes in room 3
+console.log(
+  service.getPrices([{ id: 6, lengthInMins: 0 }])[0] === 0 ? "pass" : "fail"
+);
+
+//
