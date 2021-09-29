@@ -56,7 +56,6 @@ const calculatePrice = (length, rates) => {
 class PricingService {
   constructor(pricingRulesDatabase) {
     this.pricingRulesDatabase = pricingRulesDatabase;
-    this.prices = [];
   }
 
   //takes array of objects [{id, lengthInMins}, ...]
@@ -72,10 +71,6 @@ class PricingService {
     }
 
     return prices;
-  }
-
-  savePrices(prices) {
-    this.prices = [...prices];
   }
 }
 
@@ -151,8 +146,3 @@ console.log(
 console.log(
   service.getPrices([{ id: 6, lengthInMins: 0 }])[0] === 0 ? "pass" : "fail"
 );
-
-//I save requested prices
-const prices = service.getPrices([{ id: 3, lengthInMins: 60 }]);
-service.savePrices(prices);
-console.log(service.prices[0] === 22 ? "pass" : "fail");
