@@ -22,40 +22,53 @@
 // To test the sample, with the latest version of node installed (https://nodejs.org), run "node ./refactor.js".
 //
 // CHANGE CODE BELOW THIS LINE
-class PricingService {
-  constructor(pricingRulesDatabase) {
-    this.pricingRulesDatabase = pricingRulesDatabase
-    this.prices = []
+
+const MINUTE = 1;
+const HOUR = 60;
+const DAY = 24 * 60;
+const WEEK = 60 * 24 * 7;
+
+const calculatePrice = (length, rates) => {
+  let price = 0;
+
+  if (length >= WEEK) {
+    price += Math.floor(length / WEEK) * rates[4];
+    length = length % WEEK;
   }
 
-  getPrices(pricingRequest) { // [{id, lengthInMins}, ...]
-    for (var i = 0; i < pricingRequest.length; i++) {
-      var database = this.pricingRulesDatabase
-      var pricing = database.getPricingForId(pricingRequest[i].id)
+  if (length >= DAY) {
+    price += Math.floor(length / DAY) * rates[3];
+    length = length % DAY;
+  }
 
-      var price = 0
-      if (pricingRequest[i].lengthInMins >= 60) {
-        if (pricingRequest[i].lengthInMins >= 60 * 24) {
-          if (pricingRequest[i].lengthInMins >= 60 * 24 * 7) {
-            price = (pricingRequest[i].lengthInMins / (60 * 24 * 7)) * pricing[4]
-          } else {
-            price = (pricingRequest[i].lengthInMins / (60 * 24)) * pricing[3]
-          }
-        } else {
-          price = (pricingRequest[i].lengthInMins / 60) * pricing[2]
-        }
-      } else {
-        price = (pricingRequest[i].lengthInMins * pricing[1])
-      }
+  if (length >= HOUR) {
+    price += Math.floor(length / HOUR) * rates[2];
+    length = length % HOUR;
+  }
 
-      this.prices[i] = price
+  price += length * rates[2];
+  return price;
+};
+
+class PricingService {
+  constructor(pricingRulesDatabase) {
+    this.pricingRulesDatabase = pricingRulesDatabase;
+    this.prices = [];
+  }
+
+  //takes array of objects [{id, lengthInMins}, ...]
+  //returns array of integers
+  getPrices(pricingRequest) {
+    const database = this.pricingRulesDatabase;
+
+    for (let i = 0; i < pricingRequest.length; i++) {
+      let pricing = database.getPricingForId(pricingRequest[i].id); //array of tarrifs
+      let length = pricingRequest[i].lengthInMins;
+      let price = calculatePrice(length, pricing);
+      this.prices[i] = price;
     }
 
-    var prices = this.prices
-
-    this.prices = []
-
-    return prices
+    return this.prices;
   }
 }
 
@@ -67,26 +80,45 @@ class InMemoryPricingRulesDatabase {
   }
 
   getPricingForId(roomId) {
-    return this.rows.find(row => row[0] === roomId)
+    return this.rows.find((row) => row[0] === roomId);
   }
 
   getPricing(roomIds) {
-    return this.rows.filter(row => roomIds.includes(row[0]))
+    return this.rows.filter((row) => roomIds.includes(row[0]));
   }
 }
 
 // ======= TESTS =======
 // Setup
-console.log("--- Running test cases ---")
+console.log("--- Running test cases ---");
 var seedData = [
   [3, 2, 22, 60, 105],
-]
-var database = new InMemoryPricingRulesDatabase(seedData)
-service = new PricingService(database)
+  [4, 4, 50, 70, 150],
+];
+var database = new InMemoryPricingRulesDatabase(seedData);
+service = new PricingService(database);
 
 // ===== TEST CASES =====
 // One day
-console.log(service.getPrices([{id: 3, lengthInMins: 60 * 24}])[0] === 60 ? "pass" : "fail")
+console.log(
+  service.getPrices([{ id: 3, lengthInMins: 60 * 24 }])[0] === 60
+    ? "pass"
+    : "fail"
+);
 
 // Two weeks
-console.log(service.getPrices([{id: 3, lengthInMins: 60 * 24 * 14}])[0] === 105 * 2 ? "pass" : "fail")
+console.log(
+  service.getPrices([{ id: 3, lengthInMins: 60 * 24 * 14 }])[0] === 105 * 2
+    ? "pass"
+    : "fail"
+);
+
+// One day in first room (id 3) and 9 days in second room (id 4)
+const firstTestArray = service.getPrices([
+  { id: 3, lengthInMins: DAY },
+  { id: 4, lengthInMins: DAY * 8 },
+]);
+
+console.log(
+  firstTestArray[0] === 60 && firstTestArray[1] === 220 ? "pass" : "fail"
+);
