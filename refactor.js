@@ -30,6 +30,9 @@ const WEEK = 60 * 24 * 7;
 
 const calculatePrice = (length, rates) => {
   let price = 0;
+  if (!rates) {
+    return price;
+  }
 
   if (length >= WEEK) {
     price += Math.floor(length / WEEK) * rates[4];
@@ -62,9 +65,9 @@ class PricingService {
     const database = this.pricingRulesDatabase;
 
     for (let i = 0; i < pricingRequest.length; i++) {
-      let pricing = database.getPricingForId(pricingRequest[i].id); //array of tarrifs
+      let tarrifs = database.getPricingForId(pricingRequest[i].id); //array of tarrifs
       let length = pricingRequest[i].lengthInMins;
-      let price = calculatePrice(length, pricing);
+      let price = calculatePrice(length, tarrifs);
       this.prices[i] = price;
     }
 
@@ -93,7 +96,7 @@ class InMemoryPricingRulesDatabase {
 console.log("--- Running test cases ---");
 var seedData = [
   [3, 2, 22, 60, 105],
-  [4, 4, 50, 70, 150],
+  [4, 4, 40, 70, 150],
 ];
 var database = new InMemoryPricingRulesDatabase(seedData);
 service = new PricingService(database);
@@ -113,7 +116,14 @@ console.log(
     : "fail"
 );
 
-// One day in first room (id 3) and 9 days in second room (id 4)
+//Three hours in room 4
+console.log(
+  service.getPrices([{ id: 4, lengthInMins: 60 * 3 }])[0] === 120
+    ? "pass"
+    : "fail"
+);
+
+// One day in room 3 and 9 days in room 4
 const firstTestArray = service.getPrices([
   { id: 3, lengthInMins: DAY },
   { id: 4, lengthInMins: DAY * 8 },
@@ -121,4 +131,9 @@ const firstTestArray = service.getPrices([
 
 console.log(
   firstTestArray[0] === 60 && firstTestArray[1] === 220 ? "pass" : "fail"
+);
+
+//One hour in room that isn't available
+console.log(
+  service.getPrices([{ id: 6, lengthInMins: 60 }])[0] === 0 ? "pass" : "fail"
 );
