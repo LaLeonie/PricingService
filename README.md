@@ -1,15 +1,26 @@
 # PricingService
-Tech challenge for Kitt 
+Tech challenge for Kitt appliation: Refactor of this [original code](https://gist.github.com/timrcoulson/994c33f544a189b79d7279cb9214c7c0)
 
-A refactor of this [original code](https://gist.github.com/timrcoulson/994c33f544a189b79d7279cb9214c7c0)
-
-## Process
-- [x]  Replace var with ES6 let/const 
-- [x]  move const variable outside of loop 
-- [x]  Remove code repetition by using variables (length, weeks, hours ...) 
-- [x]  Replace nested if-statement with one-level if-statements 
-- [x]  Extract price calculation logic into helper function
-- [x]  MOdifies return of getPrices 
+# Considerations
+## Readability 
+- [x] Removed nested for-loop 
+- [x] Extracted logic into helper functions
+- [x] Avoided code repetition (DRY) by adding variables and functions 
+- [x] Improved output message for tests
 
 
-Extra: added savePrices method to make use of prices property in the constructor. 
+## Security 
+- [x] Replaced var with let/const 
+
+Stretch Goal: 
+- [ ] Add some sort of type checking, such as TypeScript
+
+## Performance 
+- [x] Removed unused price property
+- [x] Moved variables outside of loop block 
+- [x] Added early returns to if conditions
+
+Stretch Goal:
+- [ ] Improve logic to get tarrifs, i.e. if multiple requests are made to the same room, avoid getting tarrif again in each loop iteration  
+
+
