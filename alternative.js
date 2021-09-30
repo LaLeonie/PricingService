@@ -29,23 +29,28 @@ const DAY = HOUR * 24;
 const WEEK = DAY * 7;
 
 const calculatePrice = (length, rates) => {
+  let price = 0;
   if (!rates) {
-    return 0;
+    return price;
   }
 
   if (length >= WEEK) {
-    return (length / WEEK) * rates[4];
+    price += Math.floor(length / WEEK) * rates[4];
+    length = length % WEEK;
   }
 
   if (length >= DAY) {
-    return (length / DAY) * rates[3];
+    price += Math.floor(length / DAY) * rates[3];
+    length = length % DAY;
   }
 
   if (length >= HOUR) {
-    return (length / HOUR) * rates[2];
+    price += Math.floor(length / HOUR) * rates[2];
+    length = length % HOUR;
   }
 
-  return length * rates[1];
+  price += length * rates[2];
+  return price;
 };
 
 class PricingService {
@@ -99,19 +104,21 @@ const service = new PricingService(database);
 
 // One day
 console.log(
-  service.getPrices([{ id: 3, lengthInMins: DAY }])[0] === 60 ? "pass" : "fail"
+  service.getPrices([{ id: 3, lengthInMins: 60 * 24 }])[0] === 60
+    ? "pass"
+    : "fail"
 );
 
 // Two weeks
 console.log(
-  service.getPrices([{ id: 3, lengthInMins: DAY * 14 }])[0] === 105 * 2
+  service.getPrices([{ id: 3, lengthInMins: 60 * 24 * 14 }])[0] === 105 * 2
     ? "pass"
     : "fail"
 );
 
 //Three hours in room 4
 console.log(
-  service.getPrices([{ id: 4, lengthInMins: HOUR * 3 }])[0] === 120
+  service.getPrices([{ id: 4, lengthInMins: 60 * 3 }])[0] === 120
     ? "pass"
     : "fail"
 );
@@ -128,7 +135,7 @@ console.log(
 
 //One hour in room that isn't available
 console.log(
-  service.getPrices([{ id: 6, lengthInMins: HOUR }])[0] === 0 ? "pass" : "fail"
+  service.getPrices([{ id: 6, lengthInMins: 60 }])[0] === 0 ? "pass" : "fail"
 );
 
 //0 minutes in room 3
