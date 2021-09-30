@@ -64,10 +64,10 @@ class PricingService {
     const database = this.pricingRulesDatabase;
     const prices = [];
     for (let i = 0; i < pricingRequest.length; i++) {
-      let tarrifs = database.getPricingForId(pricingRequest[i].id); //array of tarrifs
-      let length = pricingRequest[i].lengthInMins;
-      let price = calculatePrice(length, tarrifs);
-      prices[i] = price;
+      const tarrifs = database.getPricingForId(pricingRequest[i].id); //array of tarrifs
+      const length = pricingRequest[i].lengthInMins;
+      const price = calculatePrice(length, tarrifs);
+      prices.push(price);
     }
 
     return prices;
@@ -97,14 +97,10 @@ var seedData = [
   [3, 2, 22, 60, 105],
   [4, 4, 40, 70, 150],
 ];
-var database = new InMemoryPricingRulesDatabase(seedData);
-service = new PricingService(database);
+const database = new InMemoryPricingRulesDatabase(seedData);
+const service = new PricingService(database);
 
 // ===== TEST CASES =====
-
-// console.log(service.getPrices([{ id: 3, lengthInMins: 60 * 24 }]));
-
-// console.log(service.getPrices([{ id: 3, lengthInMins: 60 * 24 * 14 }]));
 
 // One day
 console.log(
