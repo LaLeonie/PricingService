@@ -96,54 +96,76 @@ const database = new InMemoryPricingRulesDatabase(seedData);
 const service = new PricingService(database);
 
 // ===== TEST CASES =====
-
+//helper functions
 const testSingleRequest = (desc, { id, length }, expectedResult) => {
   console.log(
-    service.getPrices([{ id, lengthInMins: length }])[0] === expectedResult
+    service.getPrices([{ id, lengthInMins: length }])[0] === +expectedResult
       ? `PASS: ${desc} correctly`
       : `FAIL: ${desc} incorrectly`
   );
 };
 
-// One day
+const testMultipleRequests = (desc, requestArray, resultArray) => {
+  const prices = service.getPrices(requestArray);
+  if (prices.length !== resultArray.length) {
+    console.log(`FAIL: ${desc} incorrectly`);
+    return;
+  }
+
+  if (!prices.every((p, i) => p === +resultArray[i])) {
+    console.log(`FAIL: ${desc} incorrectly`);
+    return;
+  }
+
+  console.log(`PASS: ${desc} correctly`);
+};
+
+//single requests
 testSingleRequest("Calculates price for one day", { id: 3, length: DAY }, 60);
 
-console.log(
-  service.getPrices([{ id: 3, lengthInMins: DAY }])[0] === 60 ? "pass" : "fail"
+testSingleRequest(
+  "Calculates price for two weeks",
+  { id: 3, length: DAY * 14 },
+  105 * 2
 );
 
-// Two weeks
-console.log(
-  service.getPrices([{ id: 3, lengthInMins: DAY * 14 }])[0] === 105 * 2
-    ? "pass"
-    : "fail"
+testSingleRequest(
+  "Calculates price for 30 minutes in room 4",
+  { id: 4, length: MINUTE * 30 },
+  4 * 30
 );
 
-//Three hours in room 4
-console.log(
-  service.getPrices([{ id: 4, lengthInMins: HOUR * 3 }])[0] === 120
-    ? "pass"
-    : "fail"
+const priceForEightDays = ((8 / 7) * 150).toFixed(2);
+
+testSingleRequest(
+  "Calculates price for 8 days in room 4",
+  { id: 4, length: 8 * DAY },
+  priceForEightDays
 );
 
-// One day in room 3 and 9 days in room 4
-const firstTestArray = service.getPrices([
-  { id: 3, lengthInMins: DAY },
-  { id: 4, lengthInMins: DAY * 8 },
-]);
-
-console.log(firstTestArray);
-
-console.log(
-  firstTestArray[0] === 60 && firstTestArray[1] === 171.43 ? "pass" : "fail"
+testSingleRequest(
+  "Calculates price for unavailble room",
+  { id: 0, length: HOUR },
+  0
 );
 
-//One hour in room that isn't available
-console.log(
-  service.getPrices([{ id: 6, lengthInMins: HOUR }])[0] === 0 ? "pass" : "fail"
+testSingleRequest("Calculates price for no time", { id: 3, length: 0 }, 0);
+
+//multiple requests
+testMultipleRequests(
+  "Calculates price for two different rooms",
+  [
+    { id: 3, lengthInMins: DAY },
+    { id: 4, lengthInMins: HOUR },
+  ],
+  [60, 40]
 );
 
-//0 minutes in room 3
-console.log(
-  service.getPrices([{ id: 6, lengthInMins: 0 }])[0] === 0 ? "pass" : "fail"
+testMultipleRequests(
+  "Calculates price for two times in same room",
+  [
+    { id: 3, lengthInMins: WEEK },
+    { id: 3, lengthInMins: 30 * MINUTE },
+  ],
+  [105, 30 * 2]
 );
