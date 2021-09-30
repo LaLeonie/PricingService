@@ -12,6 +12,7 @@ Tech challenge for Kitt appliation: Refactor of this [original code](https://gis
 ## Security 
 - [x] Replaced var with let/const 
 - [x] Added more tests to verify edge cases
+- [x] Added early return to `calculatePrice` function to catch case of falsy `rates` argument
 
 Stretch Goal: 
 - [ ] Add some sort of type checking, such as TypeScript
@@ -20,6 +21,7 @@ Stretch Goal:
 - [x] Removed unused price property
 - [x] Moved variables outside of loop block 
 - [x] Added early returns to if conditions
+- [x] Trimmed returned price to two decimals & ensured integer output 
 
 Stretch Goal:
 - [ ] Improve logic to get tarrifs, i.e. if multiple requests are made to the same room, avoid getting tarrif again in each loop iteration  
