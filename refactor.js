@@ -59,9 +59,9 @@ class PricingService {
     const database = this.pricingRulesDatabase;
     const prices = [];
     for (let i = 0; i < pricingRequest.length; i++) {
-      const tarrifs = database.getPricingForId(pricingRequest[i].id); //array of tarrifs
+      const tarrifs = database.getPricingForId(pricingRequest[i].id);
       const length = pricingRequest[i].lengthInMins;
-      const price = calculatePrice(length, tarrifs);
+      const price = +calculatePrice(length, tarrifs).toFixed(2);
       prices.push(price);
     }
 
@@ -97,7 +97,17 @@ const service = new PricingService(database);
 
 // ===== TEST CASES =====
 
+const testSingleRequest = (desc, { id, length }, expectedResult) => {
+  console.log(
+    service.getPrices([{ id, lengthInMins: length }])[0] === expectedResult
+      ? `PASS: ${desc} correctly`
+      : `FAIL: ${desc} incorrectly`
+  );
+};
+
 // One day
+testSingleRequest("Calculates price for one day", { id: 3, length: DAY }, 60);
+
 console.log(
   service.getPrices([{ id: 3, lengthInMins: DAY }])[0] === 60 ? "pass" : "fail"
 );
@@ -122,8 +132,10 @@ const firstTestArray = service.getPrices([
   { id: 4, lengthInMins: DAY * 8 },
 ]);
 
+console.log(firstTestArray);
+
 console.log(
-  firstTestArray[0] === 60 && firstTestArray[1] === 220 ? "pass" : "fail"
+  firstTestArray[0] === 60 && firstTestArray[1] === 171.43 ? "pass" : "fail"
 );
 
 //One hour in room that isn't available
