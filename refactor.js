@@ -88,7 +88,7 @@ class InMemoryPricingRulesDatabase {
 // ======= TESTS =======
 // Setup
 console.log("--- Running test cases ---");
-var seedData = [
+const seedData = [
   [3, 2, 22, 60, 105],
   [4, 4, 40, 70, 150],
 ];
@@ -153,16 +153,16 @@ testSingleRequest("Calculates price for no time", { id: 3, length: 0 }, 0);
 
 //multiple requests
 testMultipleRequests(
-  "Calculates price for two different rooms",
+  "Calculates prices for same time in two different rooms",
   [
     { id: 3, lengthInMins: DAY },
-    { id: 4, lengthInMins: HOUR },
+    { id: 4, lengthInMins: DAY },
   ],
-  [60, 40]
+  [60, 70]
 );
 
 testMultipleRequests(
-  "Calculates price for two times in same room",
+  "Calculates prices for two times in same room",
   [
     { id: 3, lengthInMins: WEEK },
     { id: 3, lengthInMins: 30 * MINUTE },
