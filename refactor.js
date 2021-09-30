@@ -135,12 +135,10 @@ testSingleRequest(
   4 * 30
 );
 
-const priceForEightDays = ((8 / 7) * 150).toFixed(2);
-
 testSingleRequest(
   "Calculates price for 8 days in room 4",
   { id: 4, length: 8 * DAY },
-  priceForEightDays
+  ((8 / 7) * 150).toFixed(2)
 );
 
 testSingleRequest(
