@@ -11,6 +11,7 @@ Tech challenge for Kitt appliation: Refactor of this [original code](https://gis
 
 ## Security 
 - [x] Replaced var with let/const 
+- [x] Added more tests to verify edge cases
 
 Stretch Goal: 
 - [ ] Add some sort of type checking, such as TypeScript
